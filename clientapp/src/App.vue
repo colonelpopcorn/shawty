@@ -3,15 +3,14 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-export default Vue.extend({
-    computed:{
-        adjective() : String {
-            return "a blah";
-        }
+import Vue from 'vue';
+import Component from 'vue-class-component';
 
+@Component({})
+export default class App extends Vue {
+    get adjective() : string {
+        return "a blah";
     }
-
-})
+};
 </script>
 
