@@ -7,11 +7,11 @@ import Vue from 'vue'
 export default Vue.extend({
     computed:{
         adjective() : String {
-            return "a blah";            
+            return "a blah";
         }
 
     }
-  
+
 })
 </script>
 
