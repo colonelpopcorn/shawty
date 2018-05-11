@@ -1,0 +1,12 @@
+{
+  "name": "clientapp",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "parcel": "^1.8.1"
+  },
+  "dependencies": {
+    "vue": "^2.5.16"
+  }
+}
