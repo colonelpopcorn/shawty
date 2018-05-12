@@ -1,0 +1,3 @@
+graft shawty/templates
+graft shawty/static
+include shawty/schema.sql

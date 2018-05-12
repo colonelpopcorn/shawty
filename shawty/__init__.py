@@ -1,0 +1,1 @@
+from .shawty import app

@@ -8,7 +8,7 @@ app.config.from_object(__name__)
 app.config.update(dict(
     DATABASE=os.path.join(app.root_path, 'shawty.db'),
     SECRET_KEY='development key',
-    USERNAME='admin'
+    USERNAME='admin',
     PASSWORD='somepass'
 ))
 app.config.from_envvar('SHAWTY_SETTINGS', silent=True)
