@@ -1,6 +1,6 @@
 import os
 import sqlite3
-from flask import Flask,session,redirect
+from flask import Flask,session,redirect,request
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -18,19 +18,6 @@ def connect_db():
     rv.row_factory = sqlite3.Row
     return rv
 
-@app.route('/')
-def hello():
-	return 'Needs to be a static SPA.'
-
-@app.route('/login')
-def login():
-	return 'Login route'
-
-@app.route('/modify')
-def add():
-	return 'Route for all url modifications, RESTful doncha know.'
-
-@app.route('/<link_id>')
-def redirect_to_route(link_id):
-	print(link_id)
-	return redirect('https://www.example.com', code=302)
+@app.route('/', methods=['GET'])
+def home():
+    return app.send_static_file('index.html')
