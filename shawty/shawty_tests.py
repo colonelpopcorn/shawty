@@ -17,6 +17,10 @@ class FlaskrUnitTestCase(unittest.TestCase):
     def test_login_route(self):
         response = self.app.post('/api/login', data=json.dumps(dict(uname="bob", passwd="bobsupersecret")), content_type='application/json')
         self.assertEqual(response.status_code, 200)
+    
+    def test_login_route_with_nonexistent_user(self):
+        response = self.app.post('/api/login', data=json.dumps(dict(uname="alice", passwd="alicesupersecret")), content_type='application/json')
+        self.assertEqual(response.status_code, 404)
 
 if __name__ == "__main__":
     unittest.main()

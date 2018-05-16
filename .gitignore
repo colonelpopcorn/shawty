@@ -103,3 +103,6 @@ ENV/
 
 # Client app built files
 **/static
+
+# Ignore sqlite databases
+**/*.db
