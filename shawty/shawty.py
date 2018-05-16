@@ -16,12 +16,20 @@ app.config.update(dict(
 app.config.from_envvar('SHAWTY_SETTINGS', silent=True)
 
 def valid_login(json):
-    query = """SELECT * FROM users WHERE username LIKE ?"""
+    query = """SELECT * FROM `users` WHERE `username`=?"""
     user = json.get('uname')
-    hashedPwd = pwd_context.hash(json.get('passwd'))
     conn = sqlite3.connect(app.config['DATABASE'])
-    conn.execute(query, user)
-    if json.get('uname') == "bob" and hashedPwd == "$6$rounds=656000$4.duBrT786/TT3B0$up2G6MH9d9yTKCJbd/kn/gvMNJ.ZkaFWqZjdMhLOBLtrOJ.4GxHzF8ehJ6ABwCNOePdd8DAeGsrw5qLCFk6Ml1":
+    conn.row_factory = sqlite3.Row
+    cursor = conn.execute(query, [user])
+    rows = cursor.fetchall()
+    user_row = []
+    for row in rows:
+        user_row = row
+        print()
+    conn.commit()
+    cursor.close()
+    conn.close()
+    if user_row != [] and user == user_row['username'] and pwd_context.verify(json.get('passwd'), user_row['password']):
         return True
     else:
         return False

@@ -7,4 +7,4 @@ npm run prod
 
 # Run the database migrations
 cd ..
-
+python3 database.py
