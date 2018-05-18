@@ -21,6 +21,15 @@ class FlaskrUnitTestCase(unittest.TestCase):
     def test_login_route_with_nonexistent_user(self):
         response = self.app.post('/api/login', data=json.dumps(dict(uname="alice", passwd="alicesupersecret")), content_type='application/json')
         self.assertEqual(response.status_code, 404)
+    
+    def test_redirect_route_with_nonexistent_url(self):
+        response = self.app.get('/some_hash', follow_redirects=True)
+        self.assertEqual(response.status_code, 404)
+    
+    def test_redirect_route_with_existing_url(self):
+        response = self.app.get('/some_other_hash')
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.location, "https://google.com")
 
 if __name__ == "__main__":
     unittest.main()

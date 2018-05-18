@@ -25,7 +25,6 @@ def valid_login(json):
     user_row = []
     for row in rows:
         user_row = row
-        print()
     conn.commit()
     cursor.close()
     conn.close()
@@ -44,3 +43,16 @@ def login():
         return "Good!"
     else:
         return "Bad!", 404
+
+@app.route('/<link_id>', methods=['GET'])
+def redirect_to_url(link_id):
+    query = """SELECT * FROM `urls` WHERE `hash`=?"""
+    conn = sqlite3.connect(app.config['DATABASE'])
+    conn.row_factory = sqlite3.Row
+    cursor = conn.execute(query, [link_id])
+    rows = cursor.fetchall()
+    if (len(rows) > 0):
+        return redirect(rows[0]['redirect_url'], 302)
+    else:
+        return "No URL found!", 404
+    
