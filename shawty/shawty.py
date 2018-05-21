@@ -15,20 +15,28 @@ app.config.update(dict(
 ))
 app.config.from_envvar('SHAWTY_SETTINGS', silent=True)
 
-def valid_login(json):
-    query = """SELECT * FROM `users` WHERE `username`=?"""
-    user = json.get('uname')
+def get_db_conn():
     conn = sqlite3.connect(app.config['DATABASE'])
     conn.row_factory = sqlite3.Row
-    cursor = conn.execute(query, [user])
+    return conn
+
+def get_rows_from_db(query, args):
+    conn = get_db_conn()
+    cursor = conn.execute(query, args)
     rows = cursor.fetchall()
-    user_row = []
-    for row in rows:
-        user_row = row
     conn.commit()
     cursor.close()
     conn.close()
-    if user_row != [] and user == user_row['username'] and pwd_context.verify(json.get('passwd'), user_row['password']):
+    return rows
+
+def valid_login(json):
+    query = """SELECT * FROM `users` WHERE `username`=? LIMIT 1"""
+    user = json.get('uname')
+    rows = get_rows_from_db(query, [user])
+    user_row = None
+    if len(rows) > 0:
+        user_row = rows[0]
+    if user_row is not None and user == user_row['username'] and pwd_context.verify(json.get('passwd'), user_row['password']):
         return True
     else:
         return False
@@ -46,11 +54,8 @@ def login():
 
 @app.route('/<link_id>', methods=['GET'])
 def redirect_to_url(link_id):
-    query = """SELECT * FROM `urls` WHERE `hash`=?"""
-    conn = sqlite3.connect(app.config['DATABASE'])
-    conn.row_factory = sqlite3.Row
-    cursor = conn.execute(query, [link_id])
-    rows = cursor.fetchall()
+    query = """SELECT * FROM `urls` WHERE `hash`=? LIMIT 1"""
+    rows = get_rows_from_db(query, [link_id])
     if (len(rows) > 0):
         return redirect(rows[0]['redirect_url'], 302)
     else:
