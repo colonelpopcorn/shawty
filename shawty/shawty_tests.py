@@ -2,6 +2,7 @@ import os
 import database
 import unittest
 import json
+import base64
 
 from shawty import app
 
@@ -20,7 +21,7 @@ class ShawtyUnitTestCase(unittest.TestCase):
         assert b'<div id="app"></div>' in response.data
 
     def test_login_route(self):
-        response = self.app.post('/api/login', data=json.dumps(dict(uname="bob", passwd="bobsupersecret")), content_type='application/json')
+        response = self.app.post('/api/login', data=json.dumps(dict(uname="bob", passwd=base64.b64encode(b"bobsupersecret").decode('utf-8'))), content_type='application/json')
         self.assertEqual(response.get_json().get("status"), 200)
         self.assertIn("Logged in!", response.get_json().get("msg"))
     
@@ -39,7 +40,7 @@ class ShawtyUnitTestCase(unittest.TestCase):
         self.assertEqual(response.location, "https://google.com")
     
     def test_registration_route(self):
-        response = self.app.post('/api/register', data=json.dumps(dict(uname="jerry", passwd="jerrysupersecret")), content_type='application/json')
+        response = self.app.post('/api/register', data=json.dumps(dict(uname="jerry", passwd='jerrysupersecret')), content_type='application/json')
         self.assertEqual(response.status_code, 200)
         self.assertIn("jerry", response.get_json().get("msg"))
 

@@ -2,6 +2,7 @@ import sqlite3
 import os
 from passlib.apps import custom_app_context as pwd_context
 from faker import Faker
+import base64
 
 def database_build():
     schema = """
@@ -39,7 +40,7 @@ def database_build():
     cursor = conn.cursor()
     
     cursor.executescript(schema)
-    cursor.execute(add_user_query, ["bob", pwd_context.hash("bobsupersecret"), "bob@bobsbobbins.com"])
+    cursor.execute(add_user_query, ["bob", pwd_context.hash(base64.b64encode(b"bobsupersecret")), "bob@bobsbobbins.com"])
     for _ in range(5):
         some_fake = Faker()
         opts = [some_fake.user_name(), some_fake.password(), some_fake.email()]
