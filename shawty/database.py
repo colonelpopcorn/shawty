@@ -26,28 +26,28 @@ def database_build():
             `url_id` integer not null
         );
     """
-    
+
     add_user_query = """
         insert into `users` (username, password, email) values (?, ?, ?)
     """
-    
+
     add_test_url_query = """
         insert into `urls` (hash, redirect_url) values (?, ?)
     """
-    
+
     conn = sqlite3.connect(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'shawty.db'))
-    
+
     cursor = conn.cursor()
-    
+
     cursor.executescript(schema)
     cursor.execute(add_user_query, ["bob", pwd_context.hash(base64.b64encode(b"bobsupersecret")), "bob@bobsbobbins.com"])
     for _ in range(5):
         some_fake = Faker()
         opts = [some_fake.user_name(), some_fake.password(), some_fake.email()]
         cursor.execute(add_user_query, opts)
-        
+
     cursor.execute(add_test_url_query, ['some_other_hash', 'https://google.com'])
-    
+
     conn.commit()
     cursor.close()
     conn.close()

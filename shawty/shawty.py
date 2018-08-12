@@ -1,5 +1,6 @@
 import os
 import sqlite3
+from string import Template
 from flask import Flask,session,redirect,request,jsonify
 from passlib.apps import custom_app_context as pwd_context
 
@@ -40,15 +41,29 @@ def valid_login(json):
         return True
     else:
         return False
-        
+
 def can_register_user(json):
     query = """SELECT * FROM `users` WHERE `username`=? LIMIT 1"""
     user = json.get("uname")
     rows = get_rows_from_db(query, [user])
     return (len(rows) == 0)
 
-def register_user_with_db(json):
-    something = True
+def insert_record_into_db(json, table):
+    conn = get_db_conn()
+    query = Template("""INSERT INTO $table($cols) VALUES ($num_of_questions)""")
+    if (table == "urls"):
+        table_query = query.substitute(table=table, cols="username, password, email", num_of_questions="(?,?,?)")
+        cursor = conn.execute(table_query) #, some args I guess)
+    elif (table == "users"):
+        table_query = query.substitute(table=table, cols="hash, redirect_url", num_of_questions="(?,?)")
+        cursor = conn.execute(table_query) #, some args I guess)
+        # do something else
+    else:
+        something = True
+
+    conn.commit()
+    cursor.close()
+    conn.close()
 
 @app.route('/', methods=['GET'])
 def home():
@@ -74,8 +89,19 @@ def redirect_to_url(link_id):
 def register_user():
     json = request.get_json()
     if can_register_user(json):
-        register_user_with_db(json)
+        insert_record_into_db(json)
         return jsonify(msg="Success! {0} has been successfully registered!".format(json.get("uname")),status=200)
     else:
         return jsonify(msg="Cannot register user!",status=404)
-    
+
+@app.route('/api/create', methods=['POST'])
+def create_link():
+    json = request.get_json()
+    url = json.get("redirect_url")
+    query = """SELECT * FROM `urls` WHERE `redirect_url`=? LIMIT 1"""
+    rows = get_rows_from_db(query, [url])
+    if (len(rows) > 0):
+        return jsonify(msg="Failed to create row! URL already exists", hash=rows[0]['hash'], status=400)
+    else:
+        something = True
+        return jsonify(msg="Success, I guess!", status=200)
